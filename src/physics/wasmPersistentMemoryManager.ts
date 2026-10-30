@@ -138,27 +138,10 @@ export class WasmPersistentMemoryManager {
       this.wasmPagesAllocated = requiredPages;
       this.wasmArenaBytes = rawBuffer.byteLength;
     } catch {
-      try {
-        // Fallback to contiguous ArrayBuffer if browser caps WebAssembly.Memory pages
-        rawBuffer = new ArrayBuffer(requiredPages * WASM_PAGE_SIZE);
-        this.wasmPagesAllocated = requiredPages;
-        this.wasmArenaBytes = rawBuffer.byteLength;
-      } catch (err) {
-        // Fallback to safe 680-page (~44 MB) buffer for memory-restricted iframes/mobile
-        console.warn(`[WasmMemory] Could not allocate ${requiredPages} pages. Falling back to safe 680 pages:`, err);
-        const safePages = Math.min(requiredPages, 680);
-        try {
-          wasmMemory = new WebAssembly.Memory({
-            initial: safePages,
-            maximum: safePages,
-          });
-          rawBuffer = wasmMemory.buffer;
-        } catch {
-          rawBuffer = new ArrayBuffer(safePages * WASM_PAGE_SIZE);
-        }
-        this.wasmPagesAllocated = safePages;
-        this.wasmArenaBytes = rawBuffer.byteLength;
-      }
+      // Fallback to contiguous ArrayBuffer if browser caps WebAssembly.Memory pages
+      rawBuffer = new ArrayBuffer(requiredPages * WASM_PAGE_SIZE);
+      this.wasmPagesAllocated = requiredPages;
+      this.wasmArenaBytes = rawBuffer.byteLength;
     }
 
     const headerU32 = new Uint32Array(rawBuffer, offHeader, 16);

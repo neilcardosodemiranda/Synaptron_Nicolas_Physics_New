@@ -1,8 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background-color: #04060b; color: #f1f5f9;">
   <head>
     <meta charset="UTF-8" />
     <script>
+      (function() {
+        try {
+          sessionStorage.removeItem('warmup_start_time');
+          sessionStorage.removeItem('warmup_last_reload_time');
+          sessionStorage.removeItem('warmup_failed_sent');
+        } catch (e) {}
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: '__aistudio_warmup_succeeded' }, '*');
+            window.addEventListener('DOMContentLoaded', function() {
+              window.parent.postMessage({ type: '__aistudio_warmup_succeeded' }, '*');
+            });
+            window.addEventListener('load', function() {
+              window.parent.postMessage({ type: '__aistudio_warmup_succeeded' }, '*');
+            });
+          }
+        } catch (e) {}
+      })();
+
       // Ignore WebSocket / HMR connection errors per environment constraints
       window.addEventListener('unhandledrejection', function(event) {
         var reason = event.reason;
@@ -41,7 +60,7 @@
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
   </head>
-  <body>
+  <body style="margin: 0; background-color: #04060b; color: #f1f5f9;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

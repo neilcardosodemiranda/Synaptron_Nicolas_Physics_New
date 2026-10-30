@@ -5974,9 +5974,11 @@ export class WasmMemristorEngine {
       isSleeping: false,
       consolidationProgress: 0,
     };
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.removeItem('synaptron_working_memory_24h');
-    }
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('synaptron_working_memory_24h');
+      }
+    } catch {}
 
     this.activeSynapses = 0;
     this.totalSynapsesPotentiated = 0;
@@ -6046,9 +6048,11 @@ export class WasmMemristorEngine {
 
     this.lastActiveMacroSomas = ['N1-ALPHA', 'N5-ALPHA'];
 
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem('synaptron_tabula_rasa_mode', 'true');
-    }
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('synaptron_tabula_rasa_mode', 'true');
+      }
+    } catch {}
 
     // Purge persistent storage across OPFS, IndexedDB, and server POSIX file
     await this.memoryManager.purgeAllBinaryStorage();
@@ -6058,9 +6062,11 @@ export class WasmMemristorEngine {
    * Re-seeds the foundational bicameral starter corpora into the pristine crossbar.
    */
   public async reseedStarterCorpora(epochs: number = 2, learningRate: number = 0.15): Promise<void> {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.removeItem('synaptron_tabula_rasa_mode');
-    }
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('synaptron_tabula_rasa_mode');
+      }
+    } catch {}
     for (const doc of CORPORE_DOCUMENTS) {
       this.ingestText(doc.content, doc.title, epochs, learningRate, doc.author);
     }

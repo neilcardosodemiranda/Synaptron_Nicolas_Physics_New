@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, Suspense, lazy } from 'react';
 import { NeuromorphicPhysicsEngine } from './physics/engine';
 import { gpuAccelerator } from './physics/webgpuEngine';
 import { ColliderCanvas } from './components/ColliderCanvas';
@@ -13,11 +13,22 @@ import { PhysicsHUD } from './components/PhysicsHUD';
 import { ParticlePenToolbar } from './components/ParticlePenToolbar';
 import { FieldModulatorPanel } from './components/FieldModulatorPanel';
 import { InspectorDrawer } from './components/InspectorDrawer';
-import { ParticlePhysicsTheoryModal } from './components/ParticlePhysicsTheoryModal';
-import { GutenbergTrainer, SAMPLE_GUTENBERG_BOOKS } from './components/GutenbergTrainer';
-import { GpuPerformanceDashboard } from './components/GpuPerformanceDashboard';
-import { TemporalMultiscaleChamber } from './components/TemporalMultiscaleChamber';
-import { BareMetalCrossbarConsole } from './components/BareMetalCrossbarConsole';
+
+const ParticlePhysicsTheoryModal = lazy(() =>
+  import('./components/ParticlePhysicsTheoryModal').then((m) => ({ default: m.ParticlePhysicsTheoryModal }))
+);
+const GutenbergTrainer = lazy(() =>
+  import('./components/GutenbergTrainer').then((m) => ({ default: m.GutenbergTrainer }))
+);
+const GpuPerformanceDashboard = lazy(() =>
+  import('./components/GpuPerformanceDashboard').then((m) => ({ default: m.GpuPerformanceDashboard }))
+);
+const TemporalMultiscaleChamber = lazy(() =>
+  import('./components/TemporalMultiscaleChamber').then((m) => ({ default: m.TemporalMultiscaleChamber }))
+);
+const BareMetalCrossbarConsole = lazy(() =>
+  import('./components/BareMetalCrossbarConsole').then((m) => ({ default: m.BareMetalCrossbarConsole }))
+);
 import {
   LetterParticle,
   SynapticNeuron,
@@ -314,162 +325,172 @@ export default function App() {
         </div>
       </header>
 
-      {activeLabBranch === 'bare_metal_crossbar' ? (
-        <main className="flex-1 p-3 max-w-[1600px] w-full mx-auto space-y-3">
-          <BareMetalCrossbarConsole
-            onInjectIntoCollider={(tokens) => {
-              setActiveLabBranch('collider');
-              tokens.forEach((t, i) => {
-                setTimeout(() => {
-                  const side = i % 2 === 0 ? 'left' : 'right';
-                  engine.injectBeam(
-                    t,
-                    side,
-                    4.5 + Math.random() * 2,
-                    false,
-                    (i - tokens.length / 2) * 12
-                  );
-                  setTick((tick) => tick + 1);
-                }, i * 140);
-              });
-            }}
-          />
-        </main>
-      ) : activeLabBranch === 'temporal_multiscale' ? (
-        <TemporalMultiscaleChamber />
-      ) : (
-        /* Main Workspace Layout */
-        <main className="flex-1 p-3 max-w-[1600px] w-full mx-auto space-y-3">
-        {/* Upper Real-Time Telemetry HUD */}
-        <PhysicsHUD telemetry={telemetry} />
+      <Suspense
+        fallback={
+          <div className="flex-1 flex items-center justify-center p-12 text-xs font-mono text-sky-400">
+            Initializing Neuromorphic Crossbar Arena...
+          </div>
+        }
+      >
+        {activeLabBranch === 'bare_metal_crossbar' ? (
+          <main className="flex-1 p-3 max-w-[1600px] w-full mx-auto space-y-3">
+            <BareMetalCrossbarConsole
+              onInjectIntoCollider={(tokens) => {
+                setActiveLabBranch('collider');
+                tokens.forEach((t, i) => {
+                  setTimeout(() => {
+                    const side = i % 2 === 0 ? 'left' : 'right';
+                    engine.injectBeam(
+                      t,
+                      side,
+                      4.5 + Math.random() * 2,
+                      false,
+                      (i - tokens.length / 2) * 12
+                    );
+                    setTick((tick) => tick + 1);
+                  }, i * 140);
+                });
+              }}
+            />
+          </main>
+        ) : activeLabBranch === 'temporal_multiscale' ? (
+          <TemporalMultiscaleChamber />
+        ) : (
+          /* Main Workspace Layout */
+          <main className="flex-1 p-3 max-w-[1600px] w-full mx-auto space-y-3">
+          {/* Upper Real-Time Telemetry HUD */}
+          <PhysicsHUD telemetry={telemetry} />
 
-        {/* Real-Time WebGPU Compute Performance Dashboard (Collapsible) */}
-        {showGpuDashboard && (
-          <GpuPerformanceDashboard
-            engine={engine}
-            onClose={() => setShowGpuDashboard(false)}
-          />
-        )}
-
-        {/* Project Gutenberg Book Trainer & Pattern Extractor (Collapsible) */}
-        {showTrainer && (
-          <GutenbergTrainer
-            engine={engine}
-            onTrainingComplete={(stats: BookTrainingStats) => {
-              setTick((t) => t + 1);
-              setTelemetry({ ...engine.telemetry });
-              confetti({
-                particleCount: 40,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#38bdf8', '#fbbf24', '#34d399'],
-              });
-            }}
-            onInjectPredictedParticles={(tokens: string[]) => {
-              setTick((t) => t + 1);
-            }}
-          />
-        )}
-
-        {/* Interactive Vacuum Chamber & Particle Pen */}
-        <div className="space-y-2">
-          {/* Particle Pen & Interaction Toolbar */}
-          <ParticlePenToolbar
-            activeTool={activeTool}
-            setActiveTool={setActiveTool}
-            selectedChar={selectedChar}
-            setSelectedChar={setSelectedChar}
-            isAntimatter={isAntimatter}
-            setIsAntimatter={setIsAntimatter}
-            soundEnabled={soundEnabled}
-            setSoundEnabled={setSoundEnabled}
-            isPaused={engine.isPaused}
-            onTogglePause={() => {
-              engine.isPaused = !engine.isPaused;
-              setTick((t) => t + 1);
-            }}
-            onExportState={handleExportState}
-            onImportState={handleImportState}
-          />
-
-          {/* Main 60 FPS Collider Vacuum Canvas */}
-          <div className="relative rounded-lg border border-slate-800 overflow-hidden shadow-2xl h-[520px]">
-            <ColliderCanvas
+          {/* Real-Time WebGPU Compute Performance Dashboard (Collapsible) */}
+          {showGpuDashboard && (
+            <GpuPerformanceDashboard
               engine={engine}
+              onClose={() => setShowGpuDashboard(false)}
+            />
+          )}
+
+          {/* Project Gutenberg Book Trainer & Pattern Extractor (Collapsible) */}
+          {showTrainer && (
+            <GutenbergTrainer
+              engine={engine}
+              onTrainingComplete={(stats: BookTrainingStats) => {
+                setTick((t) => t + 1);
+                setTelemetry({ ...engine.telemetry });
+                confetti({
+                  particleCount: 40,
+                  spread: 70,
+                  origin: { y: 0.6 },
+                  colors: ['#38bdf8', '#fbbf24', '#34d399'],
+                });
+              }}
+              onInjectPredictedParticles={(tokens: string[]) => {
+                setTick((t) => t + 1);
+              }}
+            />
+          )}
+
+          {/* Interactive Vacuum Chamber & Particle Pen */}
+          <div className="space-y-2">
+            {/* Particle Pen & Interaction Toolbar */}
+            <ParticlePenToolbar
               activeTool={activeTool}
+              setActiveTool={setActiveTool}
               selectedChar={selectedChar}
+              setSelectedChar={setSelectedChar}
               isAntimatter={isAntimatter}
-              onSelectParticle={(p) => {
-                setInspectedParticle(p);
-                setInspectedNeuron(null);
+              setIsAntimatter={setIsAntimatter}
+              soundEnabled={soundEnabled}
+              setSoundEnabled={setSoundEnabled}
+              isPaused={engine.isPaused}
+              onTogglePause={() => {
+                engine.isPaused = !engine.isPaused;
+                setTick((t) => t + 1);
               }}
-              onSelectNeuron={(n) => {
-                setInspectedNeuron(n);
-                setInspectedParticle(null);
-              }}
+              onExportState={handleExportState}
+              onImportState={handleImportState}
             />
 
-            {/* Floating Inspector Drawer */}
-            <InspectorDrawer
-              particle={inspectedParticle}
-              neuron={inspectedNeuron}
-              onClose={() => {
-                setInspectedParticle(null);
-                setInspectedNeuron(null);
-              }}
-              onAccelerateParticle={handleAccelerateParticle}
-              onInvertParticlePolarity={handleInvertPolarity}
-              onStimulateNeuron={handleStimulateNeuron}
-            />
+            {/* Main 60 FPS Collider Vacuum Canvas */}
+            <div className="relative rounded-lg border border-slate-800 overflow-hidden shadow-2xl h-[520px]">
+              <ColliderCanvas
+                engine={engine}
+                activeTool={activeTool}
+                selectedChar={selectedChar}
+                isAntimatter={isAntimatter}
+                onSelectParticle={(p) => {
+                  setInspectedParticle(p);
+                  setInspectedNeuron(null);
+                }}
+                onSelectNeuron={(n) => {
+                  setInspectedNeuron(n);
+                  setInspectedParticle(null);
+                }}
+              />
 
-            {/* Floating Synthesized Words Ticker overlay */}
-            <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between pointer-events-none text-xs">
-              <div className="flex items-center gap-2 bg-[#090d18]/90 backdrop-blur-md px-3 py-1.5 rounded border border-slate-800/80 shadow-lg pointer-events-auto">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-[11px] text-slate-400 font-medium">Synthesized Words:</span>
-                {telemetry.recognizedWords.length > 0 ? (
-                  <div className="flex items-center gap-2 font-mono text-[11px]">
-                    {telemetry.recognizedWords.map((word, idx) => (
-                      <span
-                        key={idx}
-                        className="text-amber-300 font-bold bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/50"
-                      >
-                        {word}
-                      </span>
-                    ))}
+              {/* Floating Inspector Drawer */}
+              <InspectorDrawer
+                particle={inspectedParticle}
+                neuron={inspectedNeuron}
+                onClose={() => {
+                  setInspectedParticle(null);
+                  setInspectedNeuron(null);
+                }}
+                onAccelerateParticle={handleAccelerateParticle}
+                onInvertParticlePolarity={handleInvertPolarity}
+                onStimulateNeuron={handleStimulateNeuron}
+              />
+
+              {/* Floating Synthesized Words Ticker overlay */}
+              <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between pointer-events-none text-xs">
+                <div className="flex items-center gap-2 bg-[#090d18]/90 backdrop-blur-md px-3 py-1.5 rounded border border-slate-800/80 shadow-lg pointer-events-auto">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="text-[11px] text-slate-400 font-medium">Synthesized Words:</span>
+                  {telemetry.recognizedWords.length > 0 ? (
+                    <div className="flex items-center gap-2 font-mono text-[11px]">
+                      {telemetry.recognizedWords.map((word, idx) => (
+                        <span
+                          key={idx}
+                          className="text-amber-300 font-bold bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/50"
+                        >
+                          {word}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-slate-500 text-[11px] font-mono">
+                      Colliding letters to assemble lexicon...
+                    </span>
+                  )}
+                </div>
+
+                {telemetry.annihilationsCount > 0 && (
+                  <div className="bg-pink-950/80 text-pink-300 px-2.5 py-1 rounded border border-pink-700/60 font-mono text-[11px] shadow">
+                    Annihilation Events: {telemetry.annihilationsCount}
                   </div>
-                ) : (
-                  <span className="text-slate-500 text-[11px] font-mono">
-                    Colliding letters to assemble lexicon...
-                  </span>
                 )}
               </div>
-
-              {telemetry.annihilationsCount > 0 && (
-                <div className="bg-pink-950/80 text-pink-300 px-2.5 py-1 rounded border border-pink-700/60 font-mono text-[11px] shadow">
-                  Annihilation Events: {telemetry.annihilationsCount}
-                </div>
-              )}
             </div>
           </div>
-        </div>
 
-        {/* Lower Deck: Synchrotron Beam Injectors */}
-        <BeamInjectorControls engine={engine} onRunPreset={handleRunPreset} />
+          {/* Lower Deck: Synchrotron Beam Injectors */}
+          <BeamInjectorControls engine={engine} onRunPreset={handleRunPreset} />
 
-        {/* Lower Deck: Neuromorphic Oscilloscope & Spiking Telemetry */}
-        <NeuromorphicOscilloscope engine={engine} />
+          {/* Lower Deck: Neuromorphic Oscilloscope & Spiking Telemetry */}
+          <NeuromorphicOscilloscope engine={engine} />
 
-        {/* Lower Deck: Electromagnetic & Quantum Field Modulators */}
-        <FieldModulatorPanel engine={engine} onUpdate={() => setTick((t) => t + 1)} />
-      </main>
-      )}
+          {/* Lower Deck: Electromagnetic & Quantum Field Modulators */}
+          <FieldModulatorPanel engine={engine} onUpdate={() => setTick((t) => t + 1)} />
+        </main>
+        )}
 
-      {/* Standard Model Scientific Theory Modal */}
-      <ParticlePhysicsTheoryModal
-        isOpen={isTheoryOpen}
-        onClose={() => setIsTheoryOpen(false)}
-      />
+        {/* Standard Model Scientific Theory Modal */}
+        {isTheoryOpen && (
+          <ParticlePhysicsTheoryModal
+            isOpen={isTheoryOpen}
+            onClose={() => setIsTheoryOpen(false)}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

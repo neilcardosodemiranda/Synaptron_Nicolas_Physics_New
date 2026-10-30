@@ -233,8 +233,13 @@ export const BareMetalCrossbarConsole: React.FC<BareMetalCrossbarConsoleProps> =
           handleExecuteSynthesis(currentQuery, true);
         } else if (
           wasmCrossbarEngine.totalIngestedTokens === 0 &&
-          typeof localStorage !== 'undefined' &&
-          localStorage.getItem('synaptron_tabula_rasa_mode') !== 'true'
+          (() => {
+            try {
+              return typeof localStorage === 'undefined' || localStorage.getItem('synaptron_tabula_rasa_mode') !== 'true';
+            } catch {
+              return true;
+            }
+          })()
         ) {
           for (const doc of CORPORE_DOCUMENTS) {
             wasmCrossbarEngine.ingestText(doc.content, doc.title, 2, 0.15, doc.author);
@@ -262,9 +267,12 @@ export const BareMetalCrossbarConsole: React.FC<BareMetalCrossbarConsoleProps> =
 
   // Capacity Switcher
   const handleSwitchCapacity = (preset: MemoryCapacityPreset) => {
-    const wasTabulaRasa =
-      typeof localStorage !== 'undefined' &&
-      localStorage.getItem('synaptron_tabula_rasa_mode') === 'true';
+    let wasTabulaRasa = false;
+    try {
+      wasTabulaRasa =
+        typeof localStorage !== 'undefined' &&
+        localStorage.getItem('synaptron_tabula_rasa_mode') === 'true';
+    } catch {}
     wasmCrossbarEngine.switchPreset(preset);
     if (!wasTabulaRasa) {
       for (const doc of CORPORE_DOCUMENTS) {
