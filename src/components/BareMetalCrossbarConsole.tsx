@@ -341,26 +341,57 @@ export const BareMetalCrossbarConsole: React.FC<BareMetalCrossbarConsoleProps> =
     if (streamingBookId !== null) return null;
     setStreamingBookId(bookId);
     setGutenbergStatusMsg(
-      `Fetching full UTF-8 text of Project Gutenberg Book #${bookId} (${fallbackTitle || 'Loading...'})...`
+      `Fetching full text of Project Gutenberg Book #${bookId} (${fallbackTitle || 'Loading...'})...`
     );
 
     try {
-      const res = await fetch(`/api/gutenberg/book/${bookId}`);
-      const payload = await res.json();
-      if (!res.ok || !payload.content) {
-        throw new Error(payload.error || `Could not stream Gutenberg Book #${bookId}`);
+      let bookContent = '';
+      let bookTitle = fallbackTitle || `Project Gutenberg Book #${bookId}`;
+      let bookAuthor = fallbackAuthor || 'Project Gutenberg Author';
+      let wordCount = 1000;
+
+      try {
+        const res = await fetch(`/api/gutenberg/book/${bookId}`);
+        const payload = await res.json();
+        if (res.ok && payload.content) {
+          bookContent = payload.content;
+          bookTitle = payload.title || bookTitle;
+          bookAuthor = payload.author || bookAuthor;
+          wordCount = payload.wordCountEstimate || payload.content.split(/\s+/).length;
+        } else if (payload?.error) {
+          throw new Error(payload.error);
+        }
+      } catch (fetchErr) {
+        // Fallback to local built-in excerpt if present
+        const matchedDoc = CORPORE_DOCUMENTS.find(
+          (d) =>
+            d.id.includes(String(bookId)) ||
+            (fallbackTitle && d.title.toLowerCase().includes(fallbackTitle.toLowerCase()))
+        );
+        if (matchedDoc) {
+          bookContent = matchedDoc.content;
+          bookTitle = matchedDoc.title;
+          bookAuthor = matchedDoc.author;
+          wordCount = matchedDoc.tokenCountEstimate || bookContent.split(/\s+/).length;
+          setGutenbergStatusMsg(
+            `Streaming built-in crystal text for "${bookTitle}" (local high-speed fallback)...`
+          );
+        } else {
+          throw fetchErr;
+        }
       }
 
-      const bookTitle = payload.title || fallbackTitle || `Gutenberg #${bookId}`;
-      const bookAuthor = payload.author || fallbackAuthor || 'Project Gutenberg';
+      if (!bookContent) {
+        throw new Error(`Could not load text for Gutenberg Book #${bookId}`);
+      }
 
       setGutenbergStatusMsg(
-        `Streaming "${bookTitle}" (${payload.wordCountEstimate.toLocaleString()} words) into ${activeCapacity} CSR + Pauli H8 Crossbar...`
+        `Streaming "${bookTitle}" (${wordCount.toLocaleString()} words) into Left Hemisphere ${activeCapacity} CSR + Pauli H8 Crossbar...`
       );
       soundEngine.playBeamPulse('left', 3.5);
 
       const record = await wasmCrossbarEngine.ingestFullBookStream(
-        payload.content,
+        bookContent,
         bookTitle,
         bookAuthor,
         bookId,
@@ -425,7 +456,11 @@ export const BareMetalCrossbarConsole: React.FC<BareMetalCrossbarConsoleProps> =
     for (let i = 0; i < queue.length; i++) {
       if (autoCrawlAbortRef.current) break;
       const item = queue[i];
-      await handleStreamFullGutenbergBook(item.id, item.title, item.author);
+      try {
+        await handleStreamFullGutenbergBook(item.id, item.title, item.author);
+      } catch (err) {
+        console.warn(`Autonomous crawler encountered an issue on book #${item.id}, continuing to next:`, err);
+      }
       if (autoCrawlAbortRef.current) break;
       await new Promise((r) => setTimeout(r, 250));
     }

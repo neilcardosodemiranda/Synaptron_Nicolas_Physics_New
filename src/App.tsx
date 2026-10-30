@@ -60,16 +60,12 @@ export default function App() {
     return () => clearInterval(timer);
   }, [engine]);
 
-  // Initial setup: initialize WebGPU accelerator and prime engine with Alice in Wonderland
+  // Initial setup: initialize WebGPU accelerator
   useEffect(() => {
     void gpuAccelerator.init().catch((err) => {
       console.warn('WebGPU accelerator initialization error:', err);
     });
 
-    const aliceBook = SAMPLE_GUTENBERG_BOOKS[0];
-    if (aliceBook) {
-      engine.trainOnText(aliceBook.text, aliceBook.title, 2, 0.12);
-    }
     engine.injectBeam('QUANTUM', 'left', 5.5, false, -30);
     engine.injectBeam('NEURON', 'right', 5.5, false, 30);
   }, [engine]);
