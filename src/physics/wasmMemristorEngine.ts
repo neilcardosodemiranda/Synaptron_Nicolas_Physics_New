@@ -39,40 +39,18 @@ import { WasmPersistentMemoryManager } from './wasmPersistentMemoryManager';
 import { CORPORE_DOCUMENTS } from '../data/dialogueCorpus';
 import type { QaPair, QaStreamProgress } from '../data/qaDatasetCatalog';
 import { algorithmicIntelligence } from './algorithmicIntelligence';
+import {
+  calculateTokenChemicalPotential,
+  runPass1ThermodynamicCalibration,
+} from './thermodynamicCalibration';
+import {
+  CapacityConfig,
+  MemoryCapacityPreset,
+  MEMORY_PRESETS,
+} from './csrGraphMemory';
 
-export type MemoryCapacityPreset = '5M' | '25M' | '100M';
-
-export interface CapacityConfig {
-  maxSynapses: number;
-  maxVocab: number;
-  totalVramBytes: number;
-  label: string;
-  description: string;
-}
-
-export const MEMORY_PRESETS: Record<MemoryCapacityPreset, CapacityConfig> = {
-  '5M': {
-    maxSynapses: 5_242_880,
-    maxVocab: 65_536,
-    totalVramBytes: 5_242_880 * 8 + 65_536 * 4 * 3, // ~42.7 MB
-    label: '5M Memristors (42 MB)',
-    description: 'Ultra-lightweight baseline with 65,536 vocabulary soma slots',
-  },
-  '25M': {
-    maxSynapses: 26_214_400,
-    maxVocab: 131_072,
-    totalVramBytes: 26_214_400 * 8 + 131_072 * 4 * 3, // ~211.2 MB
-    label: '25M Memristors (210 MB) [M4 Default]',
-    description: 'High-density conversational crossbar with 131,072 vocabulary somas for Apple M4 Unified Memory',
-  },
-  '100M': {
-    maxSynapses: 104_857_600,
-    maxVocab: 262_144,
-    totalVramBytes: 104_857_600 * 8 + 262_144 * 4 * 3, // ~842.0 MB
-    label: '100M Memristors (842 MB) [Bare-Metal Maximum]',
-    description: 'Massive Gutenberg library crossbar with 262,144 vocabulary somas & 100M synapses',
-  },
-};
+export type { MemoryCapacityPreset, CapacityConfig };
+export { MEMORY_PRESETS };
 
 export interface IngestedBookRecord {
   id: string;
@@ -406,19 +384,34 @@ export class WasmMemristorEngine {
     consolidationProgress: 0,
   };
 
-  constructor(preset: MemoryCapacityPreset = '25M') {
-    this.preset = preset;
-    this.config = MEMORY_PRESETS[preset];
+  constructor(preset: MemoryCapacityPreset = '5M') {
+    let chosenPreset = preset;
+    let arena;
+    try {
+      this.config = MEMORY_PRESETS[chosenPreset];
+      const maxV = this.config.maxVocab;
+      const maxS = this.config.maxSynapses;
+      const auxEdgeCap = Math.min(maxS, 8_388_608);
 
-    const maxV = this.config.maxVocab;
-    const maxS = this.config.maxSynapses;
-    const auxEdgeCap = Math.min(maxS, 8_388_608);
-
-    const arena = this.memoryManager.allocateContiguousWasmArena(
-      maxV,
-      maxS,
-      auxEdgeCap
-    );
+      arena = this.memoryManager.allocateContiguousWasmArena(
+        maxV,
+        maxS,
+        auxEdgeCap
+      );
+    } catch (e) {
+      console.warn(`[WasmEngine] Allocation for preset ${preset} failed, falling back to 5M:`, e);
+      chosenPreset = '5M';
+      this.config = MEMORY_PRESETS['5M'];
+      const maxV = this.config.maxVocab;
+      const maxS = this.config.maxSynapses;
+      const auxEdgeCap = Math.min(maxS, 2_097_152);
+      arena = this.memoryManager.allocateContiguousWasmArena(
+        maxV,
+        maxS,
+        auxEdgeCap
+      );
+    }
+    this.preset = chosenPreset;
     this.wasmMemory = arena.wasmMemory;
     this.rowPtr = arena.rowPtr;
     this.rowCounts = arena.rowCounts;
@@ -2070,75 +2063,16 @@ export class WasmMemristorEngine {
   /**
    * Computes Thermodynamic Chemical Potential \mu(w) for a word token or fragment
    * purely from Pass-1 calibrated Shannon entropies, recurrence statistics, and letter rest mass
-   * (100% Pure Physics — Zero Stopword Lists!).
+   * (Delegated to modular thermodynamicCalibration.ts).
    */
   public computeTokenChemicalPotential(rawToken: string): number {
-    const u = rawToken.toUpperCase().replace(/[^A-Z0-9'-]/g, '');
-    if (!u) return 0.08;
-
-    const count = this.wordCounts.get(u) || 0;
-    const hFwd = this.wordForwardEntropy.get(u) ?? 0.5;
-    const hBwd = this.wordBackwardEntropy.get(u) ?? 0.5;
-    const startCount = this.wordSentenceStartCounts.get(u) || 0;
-    const pStart = count > 0 ? startCount / count : 0;
-
-    const cal = this.calibrationArtifact;
-
-    // 1. Scale-Invariant Boltzmann Surprisal & Bose-Einstein Carrier Damping:
-    // Words with count >= c* (top ~24 structural bosons) are strongly damped;
-    // content words with count < c* (semantic fermions) retain high chemical potential \mu(w).
-    const cStar = Math.max(3, cal.structuralCountThresholdC);
-    const freqRatio = count / cStar;
-    let habituationFactor: number;
-    if (freqRatio >= 1.0) {
-      habituationFactor = 0.045 / Math.pow(freqRatio, 1.65);
-    } else {
-      const logGain = Math.log2((cStar + 2) / (count + 1)) / Math.log2(cStar + 2);
-      habituationFactor = 0.48 + 0.65 * Math.pow(1.0 - freqRatio, 0.65) * (0.65 + 0.55 * logGain);
-    }
-
-    // 2. Normalized Branching Entropy Specificity:
-    // Since raw H_fwd grows with log2(count), compare H_fwd against normalized capacity
-    // and detect frozen prepositional prefixes (e.g. "according [to]", where hFwd < 1.25 but hBwd > 2.5)
-    const maxPossibleH = Math.max(1.5, Math.log2(count + 2));
-    const normHfwd = hFwd / maxPossibleH;
-    let entropySpecificity =
-      normHfwd > 0.78
-        ? 0.55 / normHfwd
-        : 1.05 + (0.78 - normHfwd) * 0.35;
-    if (count >= 15 && hFwd < 1.25 && hBwd > hFwd * 2.2) {
-      // Prepositional connector locked to a single right-hand particle (e.g. "according to")
-      entropySpecificity *= 0.32;
-    }
-
-    // 3. Sentence-initial boundary damping (replaces hardcoded "WHERE"/"WHAT" stopword lists!)
-    // True interrogative/structural boundary carriers have both high pStart AND high backward entropy hBwd
-    const boundaryCarrierDamping =
-      pStart >= 0.2 && (hBwd >= 4.4 || count >= cStar * 0.5) && u.length <= 5
-        ? 0.14
-        : 1.0;
-
-    // 4. Physical particle rest mass contribution
-    let massSum = 0;
-    for (let i = 0; i < u.length; i++) {
-      massSum += getLetterParticleProperties(u[i], false).mass;
-    }
-    const massFactor =
-      Math.pow(Math.max(1, u.length), 0.72) * (massSum / Math.max(1, u.length)) * 0.45;
-
-    // 5. Directional constraint bonus when backward entropy is tight relative to forward entropy
-    const constraintBonus = hBwd < hFwd * 0.75 && count >= 2 ? 1.15 : 1.0;
-
-    return Math.max(
-      0.08,
-      Math.round(
-        habituationFactor *
-          entropySpecificity *
-          boundaryCarrierDamping *
-          massFactor *
-          constraintBonus *
-          100
-      ) / 100
+    return calculateTokenChemicalPotential(
+      rawToken,
+      this.calibrationArtifact,
+      this.wordCounts,
+      this.wordForwardEntropy,
+      this.wordBackwardEntropy,
+      this.wordSentenceStartCounts
     );
   }
 
@@ -2148,20 +2082,31 @@ export class WasmMemristorEngine {
 
   /**
    * Autonomous Character-Level Memristor Readout (Pauli-Orthogonal H8 Phase-Seeded Stream):
-   * Propagates spikes character-by-character across charDelayLineSynapses (k = 8..2) and
+   * Propagates spikes character-by-character across charDelayLineSynapses (k = 16..2) and
    * charMemristorCrossbar using Ohm's Law (I = G * V * Psi_Pauli) and refractory inhibition.
+   *
+   * Enhanced with Multi-Molecule Semantic Neighborhood Affinity:
+   * Rather than a rigid binary 850x lock (8.5 vs 0.01) that forced 1-to-1 verbatim sentence replay,
+   * this uses a graded resonance field:
+   * - Focal trajectory: 2.8x constructive phase-lock
+   * - Semantic neighborhood (related sentences / co-resonant molecules): 1.65x bridge support
+   * - Background transitions: permeable 0.52x base conductance (allowing smooth synthesis across clauses)
    */
   public generateAutonomousMemristorStream(
     seedContext: string,
     maxChars: number = 360,
     focalMoleculeId?: string,
-    targetSentenceText?: string
+    targetSentenceText?: string,
+    resonantNeighborhoodIds?: Set<string> | string[]
   ): string {
     if (this.charDelayLineSynapses.size === 0) return seedContext;
 
     let stream = seedContext;
     const visited12Grams = new Map<string, number>();
     const targetClean = targetSentenceText ? targetSentenceText.trim() : '';
+    const neighborhoodSet = resonantNeighborhoodIds
+      ? (resonantNeighborhoodIds instanceof Set ? resonantNeighborhoodIds : new Set(resonantNeighborhoodIds))
+      : undefined;
 
     for (let step = 0; step < maxChars; step++) {
       const candidateCurrents = new Map<string, number>();
@@ -2182,10 +2127,15 @@ export class WasmMemristorEngine {
                 const molSet = lineages.get(nextCh);
                 if (molSet) {
                   if (molSet.has(focalMoleculeId)) {
-                    pauliFactor = 8.5;
+                    // Focal trajectory constructive resonance
+                    pauliFactor = 2.8;
                     if (k >= 4) matchedFocalLineage = true;
+                  } else if (neighborhoodSet && Array.from(molSet).some((mId) => neighborhoodSet.has(mId))) {
+                    // Co-resonant semantic neighborhood bridging
+                    pauliFactor = 1.65;
                   } else {
-                    pauliFactor = 0.01;
+                    // Permeable background transition (allows natural clause transitions)
+                    pauliFactor = 0.52;
                   }
                 }
               }
@@ -6118,8 +6068,8 @@ export class WasmMemristorEngine {
   }
 }
 
-// Global singleton instance with Apple M4 25M default
-export const wasmCrossbarEngine = new WasmMemristorEngine('25M');
+// Global singleton instance with responsive 5M default (can scale to 25M / 100M in UI)
+export const wasmCrossbarEngine = new WasmMemristorEngine('5M');
 
 
 

@@ -91,9 +91,9 @@ export function deriveCorpusCoefficients(
     Math.max(0.002, sentenceScoreSqSum / nSent - meanSelfCoherence * meanSelfCoherence)
   );
 
-  // Threshold set at corpus mean minus 2.35 standard deviations (bounded in [0.46, 0.62])
+  // Threshold set at corpus mean minus 2.35 standard deviations (bounded in [0.46, 0.575])
   const decisionThreshold = Number(
-    Math.max(0.46, Math.min(0.62, meanSelfCoherence - 2.35 * stdSelfCoherence)).toFixed(4)
+    Math.max(0.46, Math.min(0.575, meanSelfCoherence - 2.35 * stdSelfCoherence)).toFixed(4)
   );
 
   // Pauli coupling constant λ derived from average character+word bonding density

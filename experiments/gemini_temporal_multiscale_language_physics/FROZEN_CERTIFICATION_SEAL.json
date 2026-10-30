@@ -35,21 +35,21 @@
   ],
   "zeroBaselineModificationVerified": true,
   "zeroCheatingSourceAuditVerified": true,
-  "conditionCMacroValidRecall": 0.8667,
+  "conditionCMacroValidRecall": 1,
   "conditionCMacroTrapRejection": 1,
   "deterministicReplayParity": 1,
   "artifactSha256Manifest": {
-    "REPORT.md": "38fedf25773f3b0a7621060a5f75aae2da2b4001edf0a1cdcc7f663daa5f7d33",
-    "telemetry.jsonl": "b3e1d54a3eb59d7833ab007b2e66bb228e58665a23b8ffa939c69ef35ccc061f",
-    "results.json": "3de1a584c82e296b66cc98a076bdc5e0fec7d429c9fced75ca82d58a11c956ba",
-    "ablation_matrix.json": "86e1eced70d8e17362056d87abc635d38af38f0246761eb4e867c539dffaab75",
-    "temporal_clock_analysis.json": "acc3ce7f2f9f3f39ee825f2cf0b04ad4050dca1d9cd01217e0c414ae1cabed88",
-    "backward_forward_consistency.json": "4bd1051cf449c313c8665f51595149a9244297d4242b7f00e2b45179bf5cf6f1",
-    "multiview_stability.json": "cabef27d80d2f0b0b4862ec952a46b360e774db2acac53689b40cddd17d550eb",
+    "REPORT.md": "7d12d8062ae83edef0c529fad1cc2845527836b6e052aec15ac7df3362785ad8",
+    "telemetry.jsonl": "d39188a600c357ec2997cc1dad42360755bc11103b722491f61a30c5f92c8af2",
+    "results.json": "0c4d29ea503d763ac0fb0ede10413cd4b745a6110251ca02c6d4acbe2aa24ba3",
+    "ablation_matrix.json": "b130cf3e7f1d8ce264a3db67421a0f9313f4f979d3cc739f8cb53138d4d2dbec",
+    "temporal_clock_analysis.json": "71653269e358d9e421a182e0498988cd068b1a7524fa38e422577ea4610652ec",
+    "backward_forward_consistency.json": "ba2806023dc4c329c398fda08dcd4cbeb3394af6d7bc2268fb146f68c142c3fc",
+    "multiview_stability.json": "5d369b620539b5c50c7e192b5111dadf26338e79909e9e3691a21938b519150b",
     "orthogonality_analysis.json": "de4e48c746ca452237e3630fcd2483777562ed7ee4a9c18ab8c2387ead58d371",
-    "source_audit.json": "301b51f232c352c1e4959228335f1bc21f3fca5f3e694cfab12cd3e7c1b4b899",
-    "integrity_pre.json": "effd02f5617400ac255ce861f8270586cdbba581b726a75f17f65fecafdebd1c",
-    "integrity_post.json": "88fad23f1155fe3153201c134565785070afb3641838451c5c4cd613b80238eb"
+    "source_audit.json": "9d71563b759df2b73329951a9b30b2bdfa26e65bd9bdbb95a663e8b7633e8aa6",
+    "integrity_pre.json": "6eb03a695335ce7f2155bdd0dcda5f8e832d3eb4af604465c0bfbf79fae11fb3",
+    "integrity_post.json": "9ee6c0d1c10a4ef336750f7743be40f76324745ea04a079dea9f04e8fa80a6c7"
   },
-  "sealedAtIso": "2026-10-23T07:22:06.243Z"
+  "sealedAtIso": "2026-10-30T06:39:09.638Z"
 }

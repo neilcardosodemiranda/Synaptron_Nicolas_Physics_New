@@ -15,6 +15,14 @@ This binary gate caused two critical regressions:
 1. **Suppression of Computational & Combinatorial Intelligence**: Queries requiring intrinsic structural operations on language or numbers—such as solving anagrams (`solve anagram of silent`), verifying anagram parity (`is cinema an anagram of iceman?`), reversing words (`reverse the word computer`), counting character particles (`count letters in frankenstein`), verifying palindromes (`is racecar a palindrome?`), or evaluating arithmetic (`calculate 12 * 12 + 6`)—do not depend on retrieving a pre-stored paragraph from *Frankenstein* or *Origin of Species*. Because the binary gate saw low crystal sentence overlap, it rejected them.
 2. **Suppression of Open-Ended Conversational Reasoning**: When asked open-ended or philosophical questions about unindexed topics (e.g., `"What do you think about music?"`), the binary gate prevented the 6-layer pragmatic crossbar from reasoning associatively across its learned thermodynamic chemical-potential ($\mu$) field.
 
+### 1.2 Epistemological Separation: Physical Metaphors vs. Silicon Algorithms
+To maintain uncompromising engineering rigor, the architecture distinguishes its physical metaphors from the exact computer science algorithms executing on silicon:
+- **Chemical Potential $\mu(w)$**: Entropy-weighted TF-IDF equivalent. Combines Boltzmann surprisal below structural threshold $c^*$, normalized forward branching entropy ($H_{\text{fwd}}$), sentence-initial prior damping, and letter mass.
+- **Pauli-Orthogonal H8 Stream**: High-order character $n$-gram Markov chain ($k \in [2..16]$) with exponential context-length voltage ($2.6^{k-1}$) and dynamic semantic neighborhood affinity (replacing rigid single-sentence replay locks with fluid multi-molecule bridging).
+- **LIF Neuromorphic Neurons**: Continuous leaky-integrator membrane potentials ($dV/dt = -\lambda V + I$) with threshold resets (-50 mV) and STDP weight updates.
+- **CSR Memristor Crossbars**: TypedArray Compressed Sparse Row representations for parallel sparse matrix-vector multiplication (SpMV), hardware-accelerated via WebGPU WGSL compute shaders.
+- **Algorithmic Wave Deduction**: Deterministic $O(1)$ anagram hash-bucket indexing, discrete string inversion ($\mathcal{T}$), and shunting-yard arithmetic parsing.
+
 ---
 
 ## 2. The Open-Gate Multi-Tiered Certainty Architecture

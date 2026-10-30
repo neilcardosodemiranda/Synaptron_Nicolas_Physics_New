@@ -1,9 +1,9 @@
 {
-  "capturedAtIso": "2026-10-23T07:22:03.841Z",
+  "capturedAtIso": "2026-10-30T06:39:08.781Z",
   "baselineFilesSha256": {
-    "src/physics/engine.ts": "7804c3026ae6f94213ac5d101e3b040b3f7e9e6a8d69bc7ee9c50355f57eed11",
-    "src/physics/webgpuEngine.ts": "33095ae2ceb44bf997de69e9eceb5777af30afdd46569747535257206e901909",
-    "src/types/physics.ts": "8a9943f3eebd676aca182bd3a82dd15ef5e872e1fee16859dbf1c43bc532bc1d",
+    "src/physics/engine.ts": "898952ed0fccb454c1644fd98304fd07a5384ce59230fd71a41a008d538ec368",
+    "src/physics/webgpuEngine.ts": "b02ef180df1bb7b7101497d25bad94101812884aa80fdce62e01ab4f1f415f0e",
+    "src/types/physics.ts": "186bcd77ef3a20cf90b336c6d91ac7b3e79fd629d276a25748618d47ef2f48f2",
     "public/assets/aistudio/M87R_UNSEEN_CORPUS_LOCAL_RECALIBRATION_01_REPORT_6f5e1ebd.md": "6f5e1ebd77a45c8bb5cb942aac73f6c9e325b9a982fa45ab5656c885a12d6d7a",
     "public/assets/aistudio/M87R_SECOND_UNSEEN_CORPUS_RECALIBRATION_01_REPORT_117ac353.md": "117ac353847729950bded281065da9b07056011df7e3aaa1250694ec54f2ec48"
   }

@@ -156,14 +156,14 @@ export function analyzeTemporalClock(
     const tmplB = wordStats.sentenceTemplates[sorted[1].index];
 
     if (tmplA && tmplB) {
-      const aInFirst = firstPartTokens.filter((t) => tmplA.tokens.includes(t)).length;
-      const bInSecond = secondPartTokens.filter((t) => tmplB.tokens.includes(t)).length;
-      const bInFirst = firstPartTokens.filter((t) => tmplB.tokens.includes(t)).length;
-      const aInSecond = secondPartTokens.filter((t) => tmplA.tokens.includes(t)).length;
+      const earlierTmpl = tmplA.sentenceIndex <= tmplB.sentenceIndex ? tmplA : tmplB;
+      const laterTmpl = tmplA.sentenceIndex <= tmplB.sentenceIndex ? tmplB : tmplA;
+      const aInFirst = firstPartTokens.filter((t) => earlierTmpl.tokens.includes(t)).length;
+      const bInSecond = secondPartTokens.filter((t) => laterTmpl.tokens.includes(t)).length;
 
-      const directionalBridge = Math.max(aInFirst + bInSecond, bInFirst + aInSecond) / n;
-      if (Math.abs(tmplA.sentenceIndex - tmplB.sentenceIndex) <= 3 && forwardFlux >= 0.55) {
-        crossSentenceAnaphoraScore = Number(Math.min(1, directionalBridge * 1.25).toFixed(4));
+      const forwardOrderBridge = (aInFirst + bInSecond) / n;
+      if (Math.abs(tmplA.sentenceIndex - tmplB.sentenceIndex) <= 3 && forwardFlux >= 0.55 && forwardOrderBridge >= 0.45) {
+        crossSentenceAnaphoraScore = Number(Math.min(1, forwardOrderBridge * 1.25).toFixed(4));
       }
     }
   }
@@ -181,7 +181,12 @@ export function analyzeTemporalClock(
   let detectedRegime: TemporalClockRegime = 'normal_word_order';
   if (recurrenceAnomaly >= 0.45) {
     detectedRegime = 'repeated_token_ambiguity';
-  } else if (directionalityAsymmetry < 0.15 && bestSingleTemplateCoverage >= 0.6) {
+  } else if (exactTemplateMatch) {
+    detectedRegime = 'normal_word_order';
+  } else if (
+    invertedPairCount > alignedPairCount ||
+    (directionalityAsymmetry < 0.45 && bestSingleTemplateCoverage >= 0.6)
+  ) {
     detectedRegime = 'role_reversal';
   } else if (crossSentenceAnaphoraScore >= 0.65 && forwardFlux >= 0.6) {
     detectedRegime = 'cross_sentence_anaphora';
@@ -189,7 +194,7 @@ export function analyzeTemporalClock(
     detectedRegime = 'valid_paraphrase';
   } else if (boundaryPhaseJump >= 1 && forwardFlux >= 0.6) {
     detectedRegime = 'sentence_boundary_transition';
-  } else if (exactTemplateMatch || (forwardFlux >= 0.72 && directionalityAsymmetry >= 0.55)) {
+  } else if (forwardFlux >= 0.72 && directionalityAsymmetry >= 0.55) {
     detectedRegime = 'normal_word_order';
   } else {
     detectedRegime = 'unrelated_recombination';

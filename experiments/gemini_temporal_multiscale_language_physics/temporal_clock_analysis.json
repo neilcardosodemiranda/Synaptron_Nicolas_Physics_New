@@ -1,6 +1,6 @@
 {
   "totalEvaluated": 36,
-  "regimeClassificationAccuracy": 0.6667,
+  "regimeClassificationAccuracy": 0.7778,
   "probes": [
     {
       "probeId": "narr_valid_01",
@@ -82,9 +82,9 @@
       "corpusId": "corpus_narrative_observatory",
       "category": "trap_role_reversal",
       "expectedRegime": "role_reversal",
-      "detectedRegime": "unrelated_recombination",
-      "regimeMatch": false,
-      "clockCoherence": 0.2056,
+      "detectedRegime": "role_reversal",
+      "regimeMatch": true,
+      "clockCoherence": 0.1293,
       "forwardFlux": 0.6491,
       "backwardFlux": 0,
       "directionalityAsymmetry": 0.2727,
@@ -104,7 +104,7 @@
       "backwardFlux": 0.0909,
       "directionalityAsymmetry": 0.5789,
       "recurrenceAnomaly": 0,
-      "crossSentenceAnaphoraScore": 1,
+      "crossSentenceAnaphoraScore": 0.7292,
       "paraphraseResonance": 0
     },
     {
@@ -149,7 +149,7 @@
       "backwardFlux": 0,
       "directionalityAsymmetry": 0.4,
       "recurrenceAnomaly": 0,
-      "crossSentenceAnaphoraScore": 0.6618,
+      "crossSentenceAnaphoraScore": 0.5882,
       "paraphraseResonance": 0
     },
     {
@@ -262,14 +262,14 @@
       "corpusId": "corpus_scientific_thermodynamics",
       "category": "trap_role_reversal",
       "expectedRegime": "role_reversal",
-      "detectedRegime": "cross_sentence_anaphora",
-      "regimeMatch": false,
-      "clockCoherence": 0.597,
+      "detectedRegime": "role_reversal",
+      "regimeMatch": true,
+      "clockCoherence": 0.1313,
       "forwardFlux": 0.6203,
       "backwardFlux": 0,
       "directionalityAsymmetry": 0.375,
       "recurrenceAnomaly": 0,
-      "crossSentenceAnaphoraScore": 0.8333,
+      "crossSentenceAnaphoraScore": 0.6667,
       "paraphraseResonance": 0
     },
     {
@@ -277,9 +277,9 @@
       "corpusId": "corpus_scientific_thermodynamics",
       "category": "trap_role_reversal",
       "expectedRegime": "role_reversal",
-      "detectedRegime": "unrelated_recombination",
-      "regimeMatch": false,
-      "clockCoherence": 0.1574,
+      "detectedRegime": "role_reversal",
+      "regimeMatch": true,
+      "clockCoherence": 0.0989,
       "forwardFlux": 0.4253,
       "backwardFlux": 0.05,
       "directionalityAsymmetry": 0.1667,
@@ -442,9 +442,9 @@
       "corpusId": "corpus_dialogue_multilingual",
       "category": "trap_role_reversal",
       "expectedRegime": "role_reversal",
-      "detectedRegime": "unrelated_recombination",
-      "regimeMatch": false,
-      "clockCoherence": 0.1853,
+      "detectedRegime": "role_reversal",
+      "regimeMatch": true,
+      "clockCoherence": 0.1165,
       "forwardFlux": 0.4727,
       "backwardFlux": 0.0833,
       "directionalityAsymmetry": 0.3333,

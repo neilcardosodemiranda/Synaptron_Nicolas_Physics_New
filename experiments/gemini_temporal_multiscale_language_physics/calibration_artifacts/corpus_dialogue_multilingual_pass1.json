@@ -3730,6 +3730,6 @@
     },
     "decisionThreshold": 0.5043,
     "pauliLambda": 0.3246,
-    "calibrationDurationMs": 7.07
+    "calibrationDurationMs": 2.999
   }
 }

@@ -4260,8 +4260,8 @@
       "iForward": 0.8318,
       "iReverse": 0.588
     },
-    "decisionThreshold": 0.62,
+    "decisionThreshold": 0.575,
     "pauliLambda": 0.323,
-    "calibrationDurationMs": 9.099
+    "calibrationDurationMs": 5.64
   }
 }

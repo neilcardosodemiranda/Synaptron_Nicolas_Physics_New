@@ -113,6 +113,55 @@ export const ParticlePhysicsTheoryModal: React.FC<TheoryModalProps> = ({ isOpen,
               </p>
             </div>
           </div>
+
+          {/* Section 5: Epistemological Separation (Physics Metaphor vs. Implemented Computation) */}
+          <div className="pt-2 border-t border-slate-800">
+            <div className="flex items-center gap-2 font-semibold text-cyan-400 mb-2 uppercase tracking-wider text-[11px]">
+              <BookOpen className="w-4 h-4" />
+              <span>5. Epistemological Separation: Physical Metaphor vs. Computer Science Reality</span>
+            </div>
+            <div className="bg-slate-900/70 p-3.5 rounded-lg border border-cyan-900/40 space-y-2.5">
+              <p className="text-[11px] text-slate-300">
+                To maintain strict scientific integrity, Synaptron distinguishes its visual & mathematical physical metaphors from the exact computer science algorithms executing on silicon:
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-[11px] border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-700/80 text-slate-400 font-mono">
+                      <th className="py-1.5 px-2">Physical / Neuromorphic Term</th>
+                      <th className="py-1.5 px-2">Exact Implemented Computation</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/80">
+                    <tr>
+                      <td className="py-1 px-2 font-semibold text-sky-300 font-mono">Chemical Potential μ(w)</td>
+                      <td className="py-1 px-2 text-slate-300">Entropy-weighted TF-IDF equivalent: Boltzmann surprisal below threshold c*, normalized Shannon branching entropy H_fwd, and sentence-initial priors.</td>
+                    </tr>
+                    <tr>
+                      <td className="py-1 px-2 font-semibold text-amber-300 font-mono">Pauli H8 Memristor Stream</td>
+                      <td className="py-1 px-2 text-slate-300">High-order character n-gram Markov chain (k ∈ [2..16]) with exponential context weighting (2.6^(k-1)) and multi-sentence neighborhood resonance.</td>
+                    </tr>
+                    <tr>
+                      <td className="py-1 px-2 font-semibold text-emerald-300 font-mono">LIF Neuromorphic Substrate</td>
+                      <td className="py-1 px-2 text-slate-300">Continuous leaky integrator state variables with hard threshold resets and Spike-Timing-Dependent Plasticity (STDP) conductance updates.</td>
+                    </tr>
+                    <tr>
+                      <td className="py-1 px-2 font-semibold text-purple-300 font-mono">CSR Memristor Crossbar</td>
+                      <td className="py-1 px-2 text-slate-300">Contiguous TypedArray Compressed Sparse Row (CSR) matrix-vector multiplication executed in CPU or WebGPU WGSL compute shaders.</td>
+                    </tr>
+                    <tr>
+                      <td className="py-1 px-2 font-semibold text-cyan-300 font-mono">Algorithmic Wave Deduction</td>
+                      <td className="py-1 px-2 text-slate-300">Deterministic combinatorial hash-bucket lookups (anagrams), string-reversal operator (T), and shunting-yard arithmetic parsing.</td>
+                    </tr>
+                    <tr>
+                      <td className="py-1 px-2 font-semibold text-rose-300 font-mono">Yukawa Strong Force Binding</td>
+                      <td className="py-1 px-2 text-slate-300">Short-range spatial attraction weighted by letter bigram Normalized Pointwise Mutual Information (NPMI) and dictionary validation.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Footer */}

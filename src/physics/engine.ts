@@ -1646,10 +1646,10 @@ export class NeuromorphicPhysicsEngine {
                 const molSet = lineages.get(nextCh);
                 if (molSet) {
                   if (molSet.has(focalMoleculeId)) {
-                    pauliFactor = 6.5;
+                    pauliFactor = 2.6;
                     if (k >= 4) matchedFocalLineage = true;
                   } else {
-                    pauliFactor = 0.02;
+                    pauliFactor = 0.52;
                   }
                 }
               }

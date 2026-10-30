@@ -153,10 +153,10 @@
           0.3417
         ],
         "charLevelCoherence": 0.5509,
-        "wordLevelCoherence": 0.5035,
-        "crossScaleAgreement": 0.9526,
-        "varianceAcrossPerspectives": 0.0296,
-        "wisdomScore": 0.4998
+        "wordLevelCoherence": 0.4691,
+        "crossScaleAgreement": 0.9182,
+        "varianceAcrossPerspectives": 0.0312,
+        "wisdomScore": 0.4868
       }
     },
     {
@@ -465,10 +465,10 @@
           0.0313
         ],
         "charLevelCoherence": 0.5301,
-        "wordLevelCoherence": 0.6146,
-        "crossScaleAgreement": 0.9155,
-        "varianceAcrossPerspectives": 0.0234,
-        "wisdomScore": 0.4682
+        "wordLevelCoherence": 0.405,
+        "crossScaleAgreement": 0.875,
+        "varianceAcrossPerspectives": 0.0273,
+        "wisdomScore": 0.4272
       }
     },
     {
@@ -491,10 +491,10 @@
           0.7167
         ],
         "charLevelCoherence": 0.5097,
-        "wordLevelCoherence": 0.3581,
-        "crossScaleAgreement": 0.8484,
-        "varianceAcrossPerspectives": 0.037,
-        "wisdomScore": 0.3726
+        "wordLevelCoherence": 0.3318,
+        "crossScaleAgreement": 0.822,
+        "varianceAcrossPerspectives": 0.0384,
+        "wisdomScore": 0.3644
       }
     },
     {
@@ -777,10 +777,10 @@
           0.5917
         ],
         "charLevelCoherence": 0.5369,
-        "wordLevelCoherence": 0.4077,
-        "crossScaleAgreement": 0.8708,
-        "varianceAcrossPerspectives": 0.0351,
-        "wisdomScore": 0.4062
+        "wordLevelCoherence": 0.3767,
+        "crossScaleAgreement": 0.8398,
+        "varianceAcrossPerspectives": 0.0366,
+        "wisdomScore": 0.3961
       }
     },
     {

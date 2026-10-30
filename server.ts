@@ -1618,11 +1618,10 @@ async function startServer() {
       appType: 'spa',
     });
 
-    // Ensure browser reloads always fetch fresh modules even when file watching/HMR is disabled
+    // Ensure browser reloads fetch fresh HTML while retaining Vite module transform cache
     app.use((req, res, next) => {
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
       if (req.url === '/' || req.url.startsWith('/index.html')) {
-        vite.moduleGraph.invalidateAll();
+        res.setHeader('Cache-Control', 'no-cache');
       }
       next();
     });

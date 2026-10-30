@@ -3226,6 +3226,34 @@ export const BareMetalCrossbarConsole: React.FC<BareMetalCrossbarConsoleProps> =
           </div>
 
           <div className="pt-3 border-t border-slate-800/80">
+            <div className="bg-sky-950/20 border border-sky-800/40 rounded-lg p-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-sky-400" />
+                <span className="text-xs font-bold text-sky-300 uppercase tracking-wider">
+                  EPISTEMOLOGICAL SEPARATION: PHYSICAL ANALOGIES VS. SILICON ALGORITHMS
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300">
+                Synaptron maps physical &amp; neuromorphic analogies directly to rigorous, deterministic computer science implementations:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px] text-slate-300 pt-1">
+                <div className="bg-slate-900/60 p-2 rounded border border-slate-800">
+                  <span className="font-bold text-amber-300">Chemical Potential μ(w)</span>: Information-theoretic TF-IDF equivalent combining Boltzmann frequency damping below c*, normalized branching entropy H_fwd, sentence-initial prior damping, and rest mass.
+                </div>
+                <div className="bg-slate-900/60 p-2 rounded border border-slate-800">
+                  <span className="font-bold text-emerald-300">Pauli H8 Stream</span>: Variable-order character n-gram Markov chain (k ∈ [2..16]) with 2.6^(k-1) context weighting and multi-molecule neighborhood affinity.
+                </div>
+                <div className="bg-slate-900/60 p-2 rounded border border-slate-800">
+                  <span className="font-bold text-purple-300">CSR Crossbar</span>: TypedArray Compressed Sparse Row matrix-vector multiplication (SpMV) executing in CPU or WebGPU WGSL compute shaders.
+                </div>
+                <div className="bg-slate-900/60 p-2 rounded border border-slate-800">
+                  <span className="font-bold text-cyan-300">Algorithmic Intelligence</span>: Deterministic O(1) anagram hash buckets, string time-reversal operator (T), and shunting-yard arithmetic parsing (zero external LLM).
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-slate-800/80">
             <div className="bg-rose-950/30 border border-rose-900/60 rounded-lg p-3 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">

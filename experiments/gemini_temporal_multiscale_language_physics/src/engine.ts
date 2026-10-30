@@ -930,11 +930,16 @@ export function evaluateProbePass2(
   // Combine channels into Composite Resonance Score using Pass-1 derived architecture
   let rawComposite = 0;
   if (config.enableWordChannel && config.enableCharChannel) {
+    const anaphoraBridge =
+      clockAnalysis.detectedRegime === 'cross_sentence_anaphora'
+        ? 0.05 * clockAnalysis.crossSentenceAnaphoraScore
+        : 0;
     rawComposite =
       0.34 * bidirEval.meanCTotal +
       0.22 * clockAnalysis.clockCoherence +
       0.22 * wisdomStability.wisdomScore +
-      0.22 * charEval.orthographicFidelity;
+      0.22 * charEval.orthographicFidelity +
+      anaphoraBridge;
   } else if (config.enableWordChannel && !config.enableCharChannel) {
     rawComposite =
       0.48 * bidirEval.meanCTotal +

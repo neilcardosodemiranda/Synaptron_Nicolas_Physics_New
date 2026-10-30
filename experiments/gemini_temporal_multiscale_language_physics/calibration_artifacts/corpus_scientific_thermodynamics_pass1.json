@@ -4374,8 +4374,8 @@
       "iForward": 0.9311,
       "iReverse": 0.7737
     },
-    "decisionThreshold": 0.62,
+    "decisionThreshold": 0.575,
     "pauliLambda": 0.3228,
-    "calibrationDurationMs": 8.435
+    "calibrationDurationMs": 3.956
   }
 }
